@@ -1,10 +1,14 @@
 package main
 
 import (
+	"log"
 	"log/slog"
 	"os"
 
 	"github.com/famineBurgund/famiURL/internal/config"
+	"github.com/famineBurgund/famiURL/internal/lib/logger/sl"
+	"github.com/famineBurgund/famiURL/internal/storage/sqllite"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -14,17 +18,28 @@ const (
 )
 
 func main() {
+	// TODO: init config: cleanenv
+	if err := godotenv.Load("C:/Users/fami/golang/famiURL/local.env"); err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
 	cfg := config.MustLoad()
 
+	// TODO: init logger: log/slog
 	log := setupLogger(cfg.Env)
 
 	log.Info("starting url shortener", slog.String("env", cfg.Env))
 	log.Debug("debug messages are enable")
-	// TODO: init config: cleanenv
-
-	// TODO: init logger: log/slog
 
 	// TODO: init storage: sqlite
+
+	storage, err := sqllite.New(cfg.StoragePath)
+	if err != nil {
+		log.Error("fail init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
+	_ = storage
 
 	// TODO: init router: chi, render
 
