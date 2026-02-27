@@ -7,7 +7,7 @@ import (
 
 	"github.com/famineBurgund/famiURL/internal/config"
 	"github.com/famineBurgund/famiURL/internal/lib/logger/sl"
-	"github.com/famineBurgund/famiURL/internal/storage/sqllite"
+	"github.com/famineBurgund/famiURL/internal/storage/postgres"
 	"github.com/joho/godotenv"
 )
 
@@ -31,9 +31,9 @@ func main() {
 	log.Info("starting url shortener", slog.String("env", cfg.Env))
 	log.Debug("debug messages are enable")
 
-	// TODO: init storage: sqlite
+	// TODO: init storage: postgres
 
-	storage, err := sqllite.New(cfg.StoragePath)
+	storage, err := postgres.New(cfg.StoragePath)
 	if err != nil {
 		log.Error("fail init storage", sl.Err(err))
 		os.Exit(1)
