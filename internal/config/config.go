@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Env         string `yaml:"env" env-default:"local" env-required:"true"`
-	StoragePath string `yaml:"storage_path" env-default:"./storage/storage.db" env-required:"true"`
+	StoragePath string
 	HttpServer  `yaml:"http_server"`
 }
 
