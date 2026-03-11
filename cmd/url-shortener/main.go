@@ -8,6 +8,8 @@ import (
 	"github.com/famineBurgund/famiURL/internal/config"
 	"github.com/famineBurgund/famiURL/internal/lib/logger/sl"
 	"github.com/famineBurgund/famiURL/internal/storage/postgres"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -42,6 +44,11 @@ func main() {
 	_ = storage
 
 	// TODO: init router: chi, render
+	router := chi.NewRouter()
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.URLFormat)
 
 	// TODO: run server
 }
