@@ -21,7 +21,7 @@ const (
 
 func main() {
 	// TODO: init config: cleanenv
-	if err := godotenv.Load("C:/Users/fami/golang/famiURL/local.env"); err != nil {
+	if err := godotenv.Load("local.env"); err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
@@ -34,7 +34,6 @@ func main() {
 	log.Debug("debug messages are enable")
 
 	// TODO: init storage: postgres
-
 	storage, err := postgres.New(cfg.StoragePath)
 	if err != nil {
 		log.Error("fail init storage", sl.Err(err))
