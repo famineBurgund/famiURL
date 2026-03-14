@@ -3,9 +3,11 @@ package main
 import (
 	"log"
 	"log/slog"
+	"net/http"
 	"os"
 
 	"github.com/famineBurgund/famiURL/internal/config"
+	"github.com/famineBurgund/famiURL/internal/http-server/handlers/url/save"
 	"github.com/famineBurgund/famiURL/internal/lib/logger/sl"
 	"github.com/famineBurgund/famiURL/internal/storage/postgres"
 	"github.com/go-chi/chi/middleware"
@@ -49,7 +51,26 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
+	router.Post("/url", save.New(log, storage))
+
+	log.Info("starting server", slog.String("address", cfg.Address))
+
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.Timeout,
+		WriteTimeout: cfg.Timeout,
+		IdleTimeout:  cfg.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Error("server error", sl.Err(err))
+	}
+
+	log.Info("server stopped")
+
 	// TODO: run server
+
 }
 
 func setupLogger(env string) *slog.Logger {
