@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/famineBurgund/famiURL/internal/config"
+	"github.com/famineBurgund/famiURL/internal/http-server/handlers/delete"
+	"github.com/famineBurgund/famiURL/internal/http-server/handlers/redirect"
 	"github.com/famineBurgund/famiURL/internal/http-server/handlers/url/save"
 	"github.com/famineBurgund/famiURL/internal/lib/logger/sl"
 	"github.com/famineBurgund/famiURL/internal/storage/postgres"
@@ -51,7 +53,18 @@ func main() {
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.URLFormat)
 
+	router.Route("/url", func(r chi.Router) {
+		r.Use(middleware.BasicAuth("url-shortener", map[string]string{
+			cfg.HttpServer.User: cfg.HttpServer.Password,
+		}))
+
+		r.Post("/", save.New(log, storage))
+		r.Delete("/url/{id}", delete.New(log, storage))
+	})
+
 	router.Post("/url", save.New(log, storage))
+	router.Get("/{alias}", redirect.New(log, storage))
+	router.Delete("/url/{alias}", delete.New(log, storage))
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 
